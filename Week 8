@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shadows of the Savanna | Cheetah Gallery</title>
+    <style>
+        /* Modern & Minimalist Setup */
+        * { box-sizing: border-box; }
+        body { 
+            font-family: 'Playfair Display', serif, 'Times New Roman'; 
+            background-color: #0a0a0a; 
+            color: #d4d4d4; 
+            margin: 0; 
+            padding: 0; 
+            line-height: 1.6;
+        }
+
+        /* Header Section */
+        header {
+            text-align: center;
+            padding: 80px 20px;
+            background: linear-gradient(to bottom, #1a1a1a, #0a0a0a);
+        }
+        h1 { 
+            font-size: 3rem; 
+            margin: 0; 
+            color: #fff; 
+            letter-spacing: 6px; 
+            text-transform: uppercase;
+            font-weight: 300;
+        }
+        .subtitle { 
+            font-style: italic; 
+            color: #bfa15a; /* Gold/Savanna tone */
+            letter-spacing: 2px;
+            margin-top: 10px;
+            display: block;
+        }
+
+        /* 1. The Grid (3x3 on Desktop) */
+        .gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 20px;
+            max-width: 1300px;
+            margin: 0 auto 100px auto;
+            padding: 0 20px;
+        }
+
+        .gallery a {
+            overflow: hidden;
+            border: 1px solid #222;
+            display: block;
+            background: #000;
+        }
+
+        .gallery a img {
+            width: 100%;
+            height: 400px;
+            object-fit: cover;
+            display: block;
+            transition: transform 0.8s cubic-bezier(0.2, 1, 0.3, 1), opacity 0.5s;
+            opacity: 0.8;
+        }
+
+        /* Hover Effect for a professional feel */
+        .gallery a:hover img { 
+            transform: scale(1.1); 
+            opacity: 1;
+        }
+
+        /* 2. The Full-Screen Lightbox */
+        .lightbox {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100vw; height: 100vh;
+            background: rgba(0, 0, 0, 0.98);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.4s ease;
+            z-index: 9999;
+        }
+
+        /* 3. Show Lightbox on Click */
+        .lightbox:target {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .lightbox img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+        }
+
+        /* 4. Close Button */
+        .close {
+            position: absolute;
+            top: 30px;
+            right: 40px;
+            font-size: 60px;
+            color: #fff;
+            text-decoration: none;
+            font-weight: 100;
+            transition: color 0.3s;
+        }
+        .close:hover { color: #bfa15a; }
+
+        footer {
+            text-align: center;
+            padding: 40px;
+            font-size: 0.8rem;
+            color: #444;
+            border-top: 1px solid #1a1a1a;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>SHADOWS OF THE SAVANNA</h1>
+        <span class="subtitle">A Definitive Cheetah Collection by Wildlife Photography</span>
+    </header>
+
+    <div class="gallery">
+        <a href="#img1"><img src="https://i.natgeofe.com/n/3e8319f7-74fa-4531-aa0c-5a2c6b9ed82a/NG-3000620.jpg"></a>
+        <a href="#img2"><img src="https://iso.500px.com/wp-content/uploads/2020/09/Playful-Leopard-Cub-By-Will-Burrard-Lucas.jpeg"></a>
+        <a href="#img3"><img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ7dOA-LfSEbVPEK2yVVV-5Qh4dj6X2kwsokQ&s"></a>
+        <a href="#img4"><img src="https://cdn.shopify.com/s/files/1/0757/0253/4444/files/s3_480x480.jpg?v=1726725226"></a>
+        <a href="#img5"><img src="https://www.popsci.com/wp-content/uploads/2024/09/%C2%A9-Ian-Ford-Wildlife-Photographer-of-the-Year.jpg?quality=85"></a>
+        <a href="#img6"><img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR9abYvGHVLAIZPwzSoogkV175_mbsTF_61PQ&s"></a>
+        <a href="#img7"><img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRFLhFFKqLErJ6mEpRQFC7ljVbbXBKr_R6P-Q&s"></a>
+        <a href="#img8"><img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQRbcaSzsjKwt7B7v-q6-LWHwo4cp-Ii3k0Tg&s"></a>
+        <a href="#img9"><img src="https://images.squarespace-cdn.com/content/v1/59f515e9c027d8b840d2d585/e83bf554-ce16-4364-ba25-6e572c917c04/Mountain-King-cougar-fine-art-wildlife-photography-print.jpg"></a>
+    </div>
+
+    <div class="lightbox" id="img1"><a href="#" class="close">&times;</a><img src="https://i.natgeofe.com/n/3e8319f7-74fa-4531-aa0c-5a2c6b9ed82a/NG-3000620.jpg"></div>
+    <div class="lightbox" id="img2"><a href="#" class="close">&times;</a><img src="https://iso.500px.com/wp-content/uploads/2020/09/Playful-Leopard-Cub-By-Will-Burrard-Lucas.jpeg"></div>
+    <div class="lightbox" id="img3"><a href="#" class="close">&times;</a><img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ7dOA-LfSEbVPEK2yVVV-5Qh4dj6X2kwsokQ&s"></div>
+    <div class="lightbox" id="img4"><a href="#" class="close">&times;</a><img src="https://cdn.shopify.com/s/files/1/0757/0253/4444/files/s3_480x480.jpg?v=1726725226"></div>
+    <div class="lightbox" id="img5"><a href="#" class="close">&times;</a><img src="https://www.popsci.com/wp-content/uploads/2024/09/%C2%A9-Ian-Ford-Wildlife-Photographer-of-the-Year.jpg?quality=85"></div>
+    <div class="lightbox" id="img6"><a href="#" class="close">&times;</a><img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR9abYvGHVLAIZPwzSoogkV175_mbsTF_61PQ&s"></div>
+    <div class="lightbox" id="img7"><a href="#" class="close">&times;</a><img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRFLhFFKqLErJ6mEpRQFC7ljVbbXBKr_R6P-Q&s"></div>
+    <div class="lightbox" id="img8"><a href="#" class="close">&times;</a><img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQRbcaSzsjKwt7B7v-q6-LWHwo4cp-Ii3k0Tg&s"></div>
+    <div class="lightbox" id="img9"><a href="#" class="close">&times;</a><img src="https://images.squarespace-cdn.com/content/v1/59f515e9c027d8b840d2d585/e83bf554-ce16-4364-ba25-6e572c917c04/Mountain-King-cougar-fine-art-wildlife-photography-print.jpg"></div>
+
+    <footer>
+        &copy; 2026 Wildlife Portfolio | Built with HTML & CSS
+    </footer>
+
+</body>
+</html>
