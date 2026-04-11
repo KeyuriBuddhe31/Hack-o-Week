@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>TaskFlow - Smart Task Manager</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+
+<style>
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:"Poppins",sans-serif;
+}
+
+body{
+height:100vh;
+display:flex;
+background:linear-gradient(135deg,#161a41,#4b0a1f);
+color:#333;
+}
+
+/* Sidebar */
+
+.sidebar{
+width:250px;
+background:rgba(255,255,255,0.1);
+backdrop-filter:blur(10px);
+color:white;
+padding:25px;
+}
+
+.logo{
+font-size:22px;
+font-weight:600;
+margin-bottom:30px;
+}
+
+.sidebar ul{
+list-style:none;
+}
+
+.sidebar li{
+padding:12px;
+border-radius:8px;
+cursor:pointer;
+margin-bottom:8px;
+transition:0.2s;
+}
+
+.sidebar li:hover{
+background:rgba(255,255,255,0.2);
+}
+
+/* Main */
+
+.main{
+flex:1;
+padding:40px;
+overflow:auto;
+}
+
+.header{
+display:flex;
+justify-content:space-between;
+align-items:center;
+color:white;
+margin-bottom:20px;
+}
+
+/* Task Input */
+
+.task-input{
+background:white;
+padding:15px;
+border-radius:10px;
+display:flex;
+gap:10px;
+box-shadow:0 5px 20px rgba(0,0,0,0.2);
+}
+
+.task-input input{
+flex:1;
+padding:10px;
+border:none;
+outline:none;
+font-size:14px;
+}
+
+.task-input button{
+background:#6c63ff;
+color:white;
+border:none;
+padding:10px 16px;
+border-radius:8px;
+cursor:pointer;
+transition:0.2s;
+}
+
+.task-input button:hover{
+background:#5848ff;
+}
+
+/* Task list */
+
+.task-list{
+margin-top:20px;
+}
+
+.task{
+background:white;
+padding:14px;
+border-radius:10px;
+margin-top:10px;
+display:flex;
+justify-content:space-between;
+align-items:center;
+box-shadow:0 5px 15px rgba(0,0,0,0.15);
+transition:0.2s;
+}
+
+.task:hover{
+transform:scale(1.02);
+}
+
+.task-left{
+display:flex;
+align-items:center;
+gap:10px;
+}
+
+.completed{
+text-decoration:line-through;
+opacity:0.6;
+}
+
+.actions button{
+border:none;
+background:#eee;
+padding:6px 10px;
+border-radius:6px;
+margin-left:5px;
+cursor:pointer;
+transition:0.2s;
+}
+
+.actions button:hover{
+background:#ddd;
+}
+.pomodoro{
+margin-top:30px;
+background:white;
+padding:20px;
+border-radius:12px;
+box-shadow:0 5px 20px rgba(0,0,0,0.15);
+max-width:300px;
+}
+
+.timer{
+font-size:40px;
+font-weight:600;
+margin:10px 0;
+}
+
+.timer-buttons button{
+border:none;
+padding:8px 14px;
+margin-right:6px;
+border-radius:8px;
+cursor:pointer;
+background:#6c63ff;
+color:white;
+}
+
+.timer-buttons button:hover{
+background:#5848ff;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<!-- Sidebar -->
+
+<div class="sidebar">
+
+<div class="logo">🚀 TaskFlow</div>
+
+<ul>
+<li onclick="changeView('Inbox')">📥 Inbox</li>
+<li onclick="changeView('Today')">📅 Today</li>
+<li onclick="changeView('Upcoming')">🗓 Upcoming</li>
+
+<hr style="margin:15px 0;border-color:rgba(255,255,255,0.2)">
+
+<li>💼 Work</li>
+<li>🏠 Personal</li>
+<li>⚡ Hackathon</li>
+
+</ul>
+
+</div>
+
+<!-- Main -->
+
+<div class="main">
+
+<div class="header">
+<h1 id="viewTitle">Inbox</h1>
+</div>
+
+<div class="task-input">
+
+<input id="taskInput" placeholder="Add a new task...">
+
+<button onclick="addTask()">Add</button>
+
+</div>
+
+<div class="task-list" id="taskList"></div>
+
+</div>
+<div class="pomodoro">
+
+<h2>⏱ Focus Timer</h2>
+
+<div class="timer" id="timer">25:00</div>
+
+<div class="timer-buttons">
+<button onclick="startTimer()">Start</button>
+<button onclick="pauseTimer()">Pause</button>
+<button onclick="resetTimer()">Reset</button>
+</div>
+
+</div>
+
+<script>
+
+let tasks=JSON.parse(localStorage.getItem("tasks")) || [];
+
+function save(){
+localStorage.setItem("tasks",JSON.stringify(tasks));
+}
+
+function render(){
+
+let list=document.getElementById("taskList");
+list.innerHTML="";
+
+tasks.forEach((task,index)=>{
+
+let div=document.createElement("div");
+div.className="task";
+
+let left=document.createElement("div");
+left.className="task-left";
+
+let checkbox=document.createElement("input");
+checkbox.type="checkbox";
+checkbox.checked=task.done;
+
+checkbox.onclick=()=>{
+task.done=!task.done;
+save();
+render();
+};
+
+let span=document.createElement("span");
+span.innerText=task.text;
+
+if(task.done) span.classList.add("completed");
+
+left.appendChild(checkbox);
+left.appendChild(span);
+
+let actions=document.createElement("div");
+actions.className="actions";
+
+let edit=document.createElement("button");
+edit.innerText="✏️";
+
+edit.onclick=()=>{
+let newText=prompt("Edit task",task.text);
+if(newText){
+task.text=newText;
+save();
+render();
+}
+};
+
+let del=document.createElement("button");
+del.innerText="🗑";
+
+del.onclick=()=>{
+tasks.splice(index,1);
+save();
+render();
+};
+
+actions.appendChild(edit);
+actions.appendChild(del);
+
+div.appendChild(left);
+div.appendChild(actions);
+
+list.appendChild(div);
+
+});
+
+}
+
+function addTask(){
+
+let input=document.getElementById("taskInput");
+
+if(input.value.trim()=="") return;
+
+tasks.push({
+text:input.value,
+done:false
+});
+
+input.value="";
+
+save();
+render();
+
+}
+let time = 1500;
+let timerInterval;
+
+function updateTimer(){
+
+let minutes=Math.floor(time/60);
+let seconds=time%60;
+
+document.getElementById("timer").innerText=
+String(minutes).padStart(2,"0")+":"+
+String(seconds).padStart(2,"0");
+
+}
+
+function startTimer(){
+
+if(timerInterval) return;
+
+timerInterval=setInterval(()=>{
+
+time--;
+
+updateTimer();
+
+if(time<=0){
+
+clearInterval(timerInterval);
+timerInterval=null;
+
+alert("Focus session complete! Take a break.");
+
+}
+
+},1000);
+
+}
+
+function pauseTimer(){
+
+clearInterval(timerInterval);
+timerInterval=null;
+
+}
+
+function resetTimer(){
+
+clearInterval(timerInterval);
+timerInterval=null;
+
+time=1500;
+
+updateTimer();
+
+}
+
+updateTimer();
+
+function changeView(name){
+
+document.getElementById("viewTitle").innerText=name;
+
+}
+
+render();
+
+</script>
+
+</body>
+</html>
