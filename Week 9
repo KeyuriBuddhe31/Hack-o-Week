@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title> Blog App</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+
+<style>
+:root {
+    --neon-purple: #9d50bb;
+    --neon-cyan: #00f2fe;
+    --bg-dark: #08080a;
+}
+
+body {
+    margin: 0;
+    font-family: 'Poppins', sans-serif;
+    background: var(--bg-dark);
+    color: white;
+    text-align: center;
+}
+
+.grid-bg {
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+    background-image:
+        linear-gradient(rgba(157, 80, 187, 0.1) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(157, 80, 187, 0.1) 1px, transparent 1px);
+    background-size: 40px 40px;
+    transform: rotateX(45deg);
+    animation: moveGrid 10s linear infinite;
+}
+
+@keyframes moveGrid {
+    from { background-position: 0 0; }
+    to { background-position: 0 40px; }
+}
+
+.container {
+    margin: 40px auto;
+    padding: 30px;
+    width: 90%;
+    max-width: 600px;
+    background: rgba(255,255,255,0.05);
+    backdrop-filter: blur(15px);
+    border-radius: 20px;
+    border: 1px solid var(--neon-purple);
+}
+
+input, textarea {
+    width: 100%;
+    margin-top: 15px;
+    padding: 12px;
+    border-radius: 10px;
+    border: 1px solid var(--neon-cyan);
+    background: rgba(0,0,0,0.3);
+    color: white;
+    outline: none;
+}
+
+textarea {
+    height: 150px;
+    resize: none;
+}
+
+.controls {
+    margin-top: 20px;
+}
+
+.btn {
+    padding: 10px 15px;
+    margin: 5px;
+    border: 1px solid var(--neon-purple);
+    background: transparent;
+    color: white;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.btn:hover {
+    background: var(--neon-purple);
+}
+
+.blog {
+    margin-top: 20px;
+    padding: 15px;
+    border-radius: 15px;
+    background: rgba(255,255,255,0.08);
+    border: 1px solid var(--neon-cyan);
+    position: relative;
+    text-align: left;
+    transition: 0.4s;
+}
+
+.blog.fade-out {
+    opacity: 0;
+    transform: scale(0.9);
+}
+
+.delete-btn, .edit-btn {
+    position: absolute;
+    top: 10px;
+    padding: 5px 10px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 0.75rem;
+}
+
+.delete-btn {
+    right: 10px;
+    background: crimson;
+    color: white;
+}
+
+.edit-btn {
+    right: 80px;
+    background: #00c853;
+    color: white;
+}
+
+.status {
+    margin-top: 10px;
+    font-size: 0.8rem;
+    color: #aaa;
+}
+</style>
+</head>
+
+<body>
+
+<div class="grid-bg"></div>
+
+<div class="container">
+    <h1>✨ Blog Studio</h1>
+
+    <input type="text" id="title" placeholder="Enter Blog Title...">
+    <textarea id="editor" placeholder="Write your blog here..."></textarea>
+
+    <div class="controls">
+        <button class="btn" id="undoBtn">Undo</button>
+        <button class="btn" id="redoBtn">Redo</button>
+        <button class="btn" onclick="saveBlog()">Save / Update</button>
+    </div>
+
+    <div class="status" id="status">Words: 0</div>
+
+    <div id="blogList"></div>
+</div>
+
+<script>
+const editor = document.getElementById('editor');
+const undoBtn = document.getElementById('undoBtn');
+const redoBtn = document.getElementById('redoBtn');
+const statusText = document.getElementById('status');
+
+let historyStack = [''];
+let redoStack = [];
+let editingBlog = null;
+
+function updateUI() {
+    undoBtn.disabled = historyStack.length <= 1;
+    redoBtn.disabled = redoStack.length === 0;
+
+    const words = editor.value.trim().split(/\s+/).filter(w => w.length > 0);
+    statusText.innerText = "Words: " + (editor.value.trim() === "" ? 0 : words.length);
+}
+
+editor.addEventListener('input', () => {
+    const content = editor.value;
+
+    if (content !== historyStack[historyStack.length - 1]) {
+        historyStack.push(content);
+        redoStack = [];
+        updateUI();
+    }
+});
+
+undoBtn.addEventListener('click', () => {
+    if (historyStack.length > 1) {
+        redoStack.push(historyStack.pop());
+        editor.value = historyStack[historyStack.length - 1];
+        updateUI();
+    }
+});
+
+redoBtn.addEventListener('click', () => {
+    if (redoStack.length > 0) {
+        const next = redoStack.pop();
+        historyStack.push(next);
+        editor.value = next;
+        updateUI();
+    }
+});
+
+window.addEventListener('keydown', (e) => {
+    if (e.ctrlKey && e.key === 'z') {
+        e.preventDefault();
+        undoBtn.click();
+    }
+    if (e.ctrlKey && e.key === 'y') {
+        e.preventDefault();
+        redoBtn.click();
+    }
+});
+
+function saveBlog() {
+    const title = document.getElementById('title').value;
+    const content = editor.value;
+
+    if (title === "" || content === "") {
+        alert("Please write something!");
+        return;
+    }
+
+    if (editingBlog) {
+        editingBlog.querySelector("h3").innerText = title;
+        editingBlog.querySelector("p").innerText = content;
+        editingBlog = null;
+    } else {
+        const blog = document.createElement('div');
+        blog.classList.add('blog');
+
+        blog.innerHTML = `
+            <button class="edit-btn" onclick="editBlog(this)">Edit</button>
+            <button class="delete-btn" onclick="deleteBlog(this)">Delete</button>
+            <h3>${title}</h3>
+            <p>${content}</p>
+        `;
+
+        document.getElementById('blogList').appendChild(blog);
+    }
+
+    document.getElementById('title').value = "";
+    editor.value = "";
+    historyStack = [''];
+    redoStack = [];
+    updateUI();
+}
+
+function editBlog(btn) {
+    const blog = btn.parentElement;
+
+    const title = blog.querySelector("h3").innerText;
+    const content = blog.querySelector("p").innerText;
+
+    document.getElementById('title').value = title;
+    editor.value = content;
+
+    editingBlog = blog;
+
+    historyStack = [content];
+    redoStack = [];
+    updateUI();
+}
+
+function deleteBlog(btn) {
+    const blog = btn.parentElement;
+
+    if (confirm("Delete this blog?")) {
+        blog.classList.add("fade-out");
+        setTimeout(() => blog.remove(), 400);
+    }
+}
+
+updateUI();
+</script>
+
+</body>
+</html>
